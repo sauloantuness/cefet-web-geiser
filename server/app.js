@@ -1,33 +1,50 @@
 var express = require('express'),
+	fs = require("fs"),
     app = express();
 
-// carregar "banco de dados" (data/jogadores.json e data/jogosPorJogador.json)
-// você pode colocar o conteúdo dos arquivos json no objeto "db" logo abaixo
-// dica: 3-4 linhas de código (você deve usar o módulo de filesystem (fs))
 var db = {
+	players: JSON.parse(fs.readFileSync('server/data/jogadores.json')).players,
+	jogosPorJogador: JSON.parse(fs.readFileSync('server/data/jogosPorJogador.json'))
 };
 
+app.set('view engine', 'hbs');
+app.set('views', 'server/views');
 
-// configurar qual templating engine usar. Sugestão: hbs (handlebars)
-//app.set('view engine', '???');
+app.get('/', function(req, res) {
+	res.render('index', {
+		players: db.players
+	});
+});
 
+app.get('/jogador/:numero_identificador/', function(req, res) {
+	var player = db.players.filter(x => x.steamid == req.params.numero_identificador)[0];
+	var games = db.jogosPorJogador[req.params.numero_identificador].games;
 
-// EXERCÍCIO 2
-// definir rota para página inicial --> renderizar a view index, usando os
-// dados do banco de dados "data/jogadores.json" com a lista de jogadores
-// dica: o handler desta função é bem simples - basta passar para o template
-//       os dados do arquivo data/jogadores.json
+	var number_games = games.length;
+	var games_not_played = games.filter(x => x.playtime_forever == 0).length;
 
-// EXERCÍCIO 3
-// definir rota para página de detalhes de um jogador --> renderizar a view
-// jogador, usando os dados do banco de dados "data/jogadores.json" e
-// "data/jogosPorJogador.json", assim como alguns campos calculados
-// dica: o handler desta função pode chegar a ter umas 15 linhas de código
+	games.sort(function(a, b) {
+		return b.playtime_forever - a.playtime_forever;
+	});
 
+	games = games.slice(0, 5);
 
-// EXERCÍCIO 1
-// configurar para servir os arquivos estáticos da pasta "client"
-// dica: 1 linha de código
+	games = games.map(x => {
+		x.playtime_forever = parseInt(x.playtime_forever / 60);
+		return x;
+	})
 
-// abrir servidor na porta 3000
-// dica: 1-3 linhas de código
+	res.render('jogador', {
+		player: player,
+		games: games,
+		favorite: games[0],
+		number_games: number_games,
+		games_not_played: games_not_played
+	});
+});
+
+app.use(express.static('client'));
+
+app.listen(3000, function () {
+  console.log('Example app listening on port 3000!');
+});

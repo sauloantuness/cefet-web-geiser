@@ -1,0 +1,30 @@
+{
+  "name": "geiser",
+  "version": "1.0.0",
+  "description": "prática cefet web",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sauloantuness/cefet-web-geiser.git"
+  },
+  "keywords": [
+    "web",
+    "express"
+  ],
+  "author": "Saulo",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sauloantuness/cefet-web-geiser/issues"
+  },
+  "homepage": "https://github.com/sauloantuness/cefet-web-geiser#readme",
+  "dependencies": {
+    "express": "latest",
+    "hbs": "^4.0.1"
+  }
+}
